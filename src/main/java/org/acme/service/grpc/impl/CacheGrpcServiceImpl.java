@@ -1,8 +1,11 @@
-package org.acme;
+package org.acme.service.grpc.impl;
 
 import io.quarkus.grpc.GrpcService;
 
 import io.smallrye.mutiny.Uni;
+import org.acme.CacheGrpcService;
+import org.acme.CacheReply;
+import org.acme.CacheRequest;
 import org.acme.service.SparkService;
 
 import javax.inject.Inject;
