@@ -17,13 +17,7 @@ public class CacheGrpcServiceImpl implements CacheGrpcService {
 
     @Override
     public Uni<CacheReply> getCache(CacheRequest request) {
-        return Uni.createFrom().item(sparkService.getCachedParket())
+        return Uni.createFrom().item(sparkService.getCachedParquet())
                 .map(msg -> CacheReply.newBuilder().setMessage(msg).build());
-    }
-
-    @Override
-    public Uni<EmptyReply> saveCache(CacheRequest request) {
-        sparkService.saveParquetFile(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-        return Uni.createFrom().item(EmptyReply.newBuilder().build());
     }
 }

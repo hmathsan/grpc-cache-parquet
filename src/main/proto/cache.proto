@@ -8,12 +8,9 @@ package hello;
 
 service CacheGrpcService {
     rpc getCache (CacheRequest) returns (CacheReply) {}
-    rpc saveCache (CacheRequest) returns (EmptyReply) {}
 }
 
 message CacheRequest {}
-
-message EmptyReply {}
 
 message CacheReply {
     string message = 1;

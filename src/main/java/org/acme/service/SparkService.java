@@ -1,9 +1,8 @@
 package org.acme.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.acme.model.TimestampCachePayload;
 import org.acme.utils.HadoopProperties;
-import org.apache.log4j.Logger;
-import org.apache.spark.api.java.function.ForeachFunction;
 import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoders;
@@ -13,11 +12,12 @@ import org.apache.spark.sql.types.Metadata;
 import org.apache.spark.sql.types.StringType;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
+import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.eclipse.microprofile.reactive.messaging.Emitter;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,7 +25,9 @@ import java.util.List;
 @ApplicationScoped
 public class SparkService {
 
-    private static final Logger LOG = Logger.getLogger(SparkService.class);
+    @Inject
+    @Channel("timestamp-cache-out")
+    Emitter<String> timestampCacheEmitter;
 
     @Inject
     HadoopProperties properties;
@@ -59,13 +61,10 @@ public class SparkService {
             df.write().mode("append").parquet("s3a://test-parquet-bucket/parquet/test1.parquet");
         } catch (Exception e) {
             df.write().parquet("s3a://test-parquet-bucket/parquet/test1.parquet");
-
         }
-
-        spark.close();
     }
 
-    public String getCachedParket() {
+    public String getCachedParquet() {
         try {
             Dataset<Row> parquetDf = spark.read().parquet("s3a://test-parquet-bucket/parquet/test1.parquet");
             parquetDf.createOrReplaceTempView("parquetDf");
@@ -78,6 +77,10 @@ public class SparkService {
 
             return timestampDs.get(0);
         } catch (Exception e) {
+            if (e.getMessage().contains("Path does not exist")) {
+                timestampCacheEmitter.send("No cache found");
+                return "No cache found";
+            }
             return "error";
         }
     }
