@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.acme";
+option java_outer_classname = "HelloGrpcProto";
+
+package hello;
+
+service CacheGrpcService {
+    rpc getCache (CacheRequest) returns (CacheReply) {}
+    rpc saveCache (CacheRequest) returns (EmptyReply) {}
+}
+
+message CacheRequest {}
+
+message EmptyReply {}
+
+message CacheReply {
+    string message = 1;
+}
