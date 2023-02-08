@@ -11,10 +11,10 @@ import java.time.format.DateTimeFormatter;
 public class KafkaService {
 
     @Inject
-    SparkService sparkService;
+    S3ParquetFileService s3ParquetFileService;
 
     @Incoming("timestamp-cache-in")
     public void timestampCacheConsumer(String ignoredMsg) {
-        sparkService.saveParquetFile(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        s3ParquetFileService.saveParquetFile(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
     }
 }

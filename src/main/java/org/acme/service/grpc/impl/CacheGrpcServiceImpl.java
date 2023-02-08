@@ -6,21 +6,19 @@ import io.smallrye.mutiny.Uni;
 import org.acme.CacheGrpcService;
 import org.acme.CacheReply;
 import org.acme.CacheRequest;
-import org.acme.service.SparkService;
+import org.acme.service.S3ParquetFileService;
 
 import javax.inject.Inject;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @GrpcService
 public class CacheGrpcServiceImpl implements CacheGrpcService {
 
     @Inject
-    SparkService sparkService;
+    S3ParquetFileService s3ParquetFileService;
 
     @Override
     public Uni<CacheReply> getCache(CacheRequest request) {
-        return Uni.createFrom().item(sparkService.getCachedParquet())
+        return Uni.createFrom().item(s3ParquetFileService.getCachedParquet())
                 .map(msg -> CacheReply.newBuilder().setMessage(msg).build());
     }
 }
