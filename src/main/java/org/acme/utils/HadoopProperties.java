@@ -26,4 +26,13 @@ public class HadoopProperties {
 
     @ConfigProperty(name = "hadoop.aws.endpoint.value")
     String awsEndpointValue;
+
+    @ConfigProperty(name = "hadoop.aws.file.path")
+    String filePath;
+
+    @ConfigProperty(name = "hadoop.aws.bucket.name")
+    String bucketName;
+
+    @ConfigProperty(name = "hadoop.aws.file.name")
+    String fileName;
 }

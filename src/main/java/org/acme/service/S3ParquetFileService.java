@@ -42,10 +42,6 @@ public class S3ParquetFileService {
             "{\"name\": \"timestamp\", \"type\": \"string\"}" +
             "]}";
 
-    private static final String BUCKET_NAME = "test-parquet-bucket";
-
-    private static final String FILE_NAME = "test1.parquet";
-
     @Inject
     @Channel("timestamp-cache-out")
     Emitter<String> timestampCacheEmitter;
@@ -76,7 +72,7 @@ public class S3ParquetFileService {
                 deleteFile();
             }
 
-            Path path = new Path("s3a://" + BUCKET_NAME + "/parquet/" + FILE_NAME);
+            Path path = new Path(properties.getFilePath());
 
             try(ParquetWriter<GenericData.Record> writer = AvroParquetWriter.<GenericData.Record>builder(path)
                     .withSchema(avroSchema)
@@ -87,7 +83,7 @@ public class S3ParquetFileService {
             ) {
                 writer.write(record);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -105,7 +101,7 @@ public class S3ParquetFileService {
     }
 
     private List<GenericRecord> getS3File() {
-        Path path = new Path("s3a://" + BUCKET_NAME + "/parquet/" + FILE_NAME);
+        Path path = new Path(properties.getFilePath());
 
         try {
             InputFile file = HadoopInputFile.fromPath(path, conf);
@@ -130,7 +126,7 @@ public class S3ParquetFileService {
                     .withRegion(clientRegion)
                     .build();
 
-            s3Client.deleteObject(new DeleteObjectRequest(BUCKET_NAME, FILE_NAME));
+            s3Client.deleteObject(new DeleteObjectRequest(properties.getBucketName(), properties.getFileName()));
         } catch (SdkClientException e) {
             e.printStackTrace();
         }
